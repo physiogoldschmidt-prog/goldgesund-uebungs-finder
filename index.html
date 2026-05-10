@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Übungs-Finder | GOLDGESUND</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;700&family=Allura&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F5EDD8;
+  --accent:#C8963E;
+  --btn:#1D9E75;
+  --btn-dark:#156b50;
+  --input-bg:rgba(44,35,10,0.08);
+  --input-border:rgba(200,150,62,0.35);
+  --card-bg:rgba(255,255,255,0.65);
+  --card-border:rgba(200,150,62,0.25);
+  --text:#2C2C2A;
+  --muted:#6b5c3a;
+}
+html,body{min-height:100vh;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column;align-items:center;padding:48px 20px 60px}
+
+.header{text-align:center;margin-bottom:40px}
+.wordmark{font-family:'Allura',cursive;font-size:48px;color:var(--accent);display:block;margin-bottom:2px}
+.by-line{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:20px}
+.header h1{font-family:'Playfair Display',serif;font-size:clamp(24px,4vw,38px);font-weight:700;line-height:1.2;margin-bottom:10px;color:var(--btn)}
+.header p{font-size:15px;font-weight:400;color:var(--muted);max-width:480px;line-height:1.75}
+
+.footer{text-align:center;margin-top:48px;padding-top:24px;border-top:1px solid rgba(200,150,62,0.2);width:100%;max-width:560px}
+.footer p{font-size:14px;color:var(--muted);line-height:1.8}
+.footer a{color:var(--accent);text-decoration:none;font-weight:500}
+.footer a:hover{text-decoration:underline}
+.no-match{background:rgba(255,255,255,0.7);border:1px solid rgba(200,150,62,0.3);border-radius:14px;padding:24px;text-align:center;font-size:15px;color:var(--muted);line-height:1.7}
+
+.form-card{background:rgba(255,255,255,0.55);backdrop-filter:blur(12px);border:1px solid rgba(200,150,62,0.2);border-radius:20px;padding:36px 32px;width:100%;max-width:560px;margin-bottom:32px;box-shadow:0 4px 32px rgba(100,70,10,0.08)}
+
+.form-group{margin-bottom:20px}
+.form-group label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.form-group input{width:100%;background:rgba(255,255,255,0.8);border:1.5px solid var(--input-border);border-radius:10px;padding:13px 16px;font-size:15px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;transition:border-color .18s,background .18s}
+.form-group input::placeholder{color:var(--muted);opacity:.6}
+.form-group input:focus{border-color:var(--accent);background:#fff}
+
+.btn-primary{width:100%;padding:15px;background:var(--btn);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .18s,transform .1s;margin-top:4px;letter-spacing:.3px}
+.btn-primary:hover:not(:disabled){background:var(--btn-dark);transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.55;cursor:not-allowed}
+
+.error{background:#fff0e0;border:1px solid rgba(200,150,62,0.4);color:#7a4a00;border-radius:10px;padding:14px 18px;font-size:14px;line-height:1.6;margin-bottom:16px;display:none}
+.error.show{display:block}
+
+.results{width:100%;max-width:560px;display:none}
+.results.show{display:block}
+
+.back-btn{background:transparent;border:1.5px solid var(--accent);color:var(--accent);border-radius:8px;padding:9px 18px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;margin-bottom:22px;transition:background .18s,color .18s}
+.back-btn:hover{background:var(--accent);color:#fff}
+
+.results-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:600;text-align:center;margin-bottom:5px;color:var(--text)}
+.results-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:26px}
+
+.cards{display:flex;flex-direction:column;gap:18px}
+.card{background:var(--card-bg);border:1px solid var(--card-border);backdrop-filter:blur(10px);border-radius:16px;padding:24px 26px;box-shadow:0 2px 20px rgba(100,70,10,0.07)}
+.card-num{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);margin-bottom:7px}
+.card-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;margin-bottom:8px;line-height:1.2;color:var(--text)}
+.card-desc{font-size:14px;color:var(--muted);line-height:1.65;margin-bottom:14px}
+.card-hr{height:1px;background:rgba(200,150,62,0.2);margin:12px 0}
+.card-anleitung-label{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.card-anleitung{font-size:14px;line-height:1.75;color:var(--text);white-space:pre-wrap}
+.card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:14px;flex-wrap:wrap;gap:8px}
+.card-dauer{background:rgba(29,158,117,0.12);border:1px solid rgba(29,158,117,0.3);color:var(--btn-dark);border-radius:20px;padding:4px 14px;font-size:12px;font-weight:700;letter-spacing:.3px}
+.card-tipp{font-size:12px;color:var(--muted);font-style:italic;line-height:1.5;margin-top:10px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="wordmark">goldgesund</span>
+  <span class="by-line">Lisa Goldschmidt · Osteopathin</span>
+  <h1>Dein persönlicher<br>Übungs-Finder</h1>
+  <p>Beschreibe kurz deine Situation — ich schlage dir drei passende Übungen vor.</p>
+</div>
+
+<div class="form-card" id="form-card">
+  <div class="error" id="error"></div>
+  <div class="form-group">
+    <label>Dein Vorname (optional)</label>
+    <input type="text" id="vorname" placeholder="z.B. Anna" autocomplete="given-name"/>
+  </div>
+  <div class="form-group">
+    <label>Was spürst du? (Symptom)</label>
+    <input type="text" id="symptom" placeholder="z.B. Kopfschmerzen, Nackenverspannung, Bauchschmerzen …" autocomplete="off"/>
+  </div>
+  <div class="form-group">
+    <label>Wie ist deine Stimmung?</label>
+    <input type="text" id="stimmung" placeholder="z.B. gestresst, erschöpft, ängstlich, traurig …" autocomplete="off"/>
+  </div>
+  <div class="form-group">
+    <label>Wo bist du gerade?</label>
+    <input type="text" id="situation" placeholder="z.B. zuhause, Büro, unterwegs, im Auto …" autocomplete="off"/>
+  </div>
+  <button class="btn-primary" id="btn" onclick="suchen()">Übungen finden →</button>
+</div>
+
+<div class="results" id="results">
+  <button class="back-btn" onclick="reset()">← Zurück</button>
+  <div class="results-title" id="results-title">Deine 3 Übungen</div>
+  <div class="results-sub" id="results-sub"></div>
+  <div class="cards" id="cards"></div>
+</div>
+
+<footer class="footer">
+  <p>Dieses Tool ersetzt keine Behandlung.<br>
+  Hast du Fragen oder möchtest du einen Termin?<br>
+  <a href="mailto:lisa.goldschmidt@stressfrei-er-leben.de">Schreib mir →</a>
+  </p>
+</footer>
+
+<script>
+// GOLDGESUND — Übungsdatenbank
+// 100 Übungen für den persönlichen Übungs-Finder
+// Erstellt von Lisa Goldschmidt | Osteopathin
+
+const uebungen = [
+
+  // ═══════════════════════════════════
+  // KOPFSCHMERZEN
+  // ═══════════════════════════════════
+  {
+    id: 1,
+    titel: "Subokzipitale Entspannung",
+    beschreibung: "Lege beide Hände hinter den Kopf, die Fingerkuppen berühren die Schädelbasis. Atme tief aus und lasse den Kopf schwer in die Hände sinken. Halte 2–3 Minuten.",
+    dauer: "3 Min",
+    symptome: ["kopfschmerzen", "nackenschmerzen", "verspannungen"],
+    stimmung: ["gestresst", "erschöpft", "überwältigt"],
+    situation: ["zuhause", "büro", "abends"],
+    säule: "parietal",
+    tipp: "Die Fingerkuppen müssen nicht drücken — nur Wärme und Gewicht geben."
+  },
+  {
+    id: 2,
+    titel: "Augen weich werden lassen",
+    beschreibung: "Schließe die Augen. Stell dir vor deine Augäpfel sinken nach innen — werden schwer, weich, tief. Atme dabei langsam aus. Wiederhole 5x.",
+    dauer: "2 Min",
+    symptome: ["kopfschmerzen", "erschöpfung"],
+    stimmung: ["gestresst", "überwältigt", "unruhig"],
+    situation: ["zuhause", "büro", "unterwegs"],
+    säule: "craniosacral",
+    tipp: "Besonders wirksam bei Bildschirm-Kopfschmerzen."
+  },
+  {
+    id: 3,
+    titel: "Schläfenmassage mit Ausatmung",
+    beschreibung: "Lege die Fingerkuppen auf die Schläfen. Beim Einatmen leicht andrücken, beim Ausatmen loslassen. 8 Atemzüge lang.",
+    dauer: "2 Min",
+    symptome: ["kopfschmerzen", "kiefer", "verspannungen"],
+    stimmung: ["gestresst", "angespannt"],
+    situation: ["zuhause", "büro", "unterwegs"],
+    säule: "craniosacral",
+    tipp: "Nicht reiben — nur sanften Druck halten und mit dem Atem loslassen."
+  },
+  {
+    id: 4,
+    titel: "Kaltes Wasser — Vagus-Aktivierung",
+    beschreibung: "Halte beide Handgelenke 30 Sekunden unter kaltes Wasser. Atme dabei tief und ruhig. Der Vagusnerv wird direkt stimuliert.",
+    dauer: "1 Min",
+    symptome: ["kopfschmerzen", "angst", "erschöpfung"],
+    stimmung: ["überwältigt", "ängstlich", "unruhig"],
+    situation: ["zuhause", "büro"],
+    säule: "craniosacral",
+    tipp: "Kalt aber nicht eisig. Das Ziel ist Stimulation, nicht Schock."
+  },
+  {
+    id: 5,
+    titel: "Trinken & Pausieren",
+    beschreibung: "Trink ein großes Glas Wasser — langsam, bewusst, in kleinen Schlucken. Sitze dabei aufrecht und atme zwischen jedem Schluck kurz durch die Nase.",
+    dauer: "3 Min",
+    symptome: ["kopfschmerzen"],
+    stimmung: ["müde", "erschöpft"],
+    situation: ["zuhause", "büro", "unterwegs"],
+    säule: "viszeral",
+    tipp: "Viele Kopfschmerzen sind Dehydrations-Kopfschmerzen. Wasser zuerst."
+  },
+  {
+    id: 6,
+    titel: "Chin Tuck — HWS Reset",
+    beschreibung: "Sitz aufrecht. Ziehe das Kinn langsam nach hinten — wie ein doppeltes Kinn. Halte 5 Sekunden, löse. 10 Wiederholungen.",
+    dauer: "2 Min",
+    symptome: ["nackenschmerzen", "kopfschmerzen"],
+    stimmung: ["gestresst", "angespannt"],
+    situation: ["zuhause", "büro", "unterwegs"],
+    säule: "parietal",
+    tipp: "Nicht nach unten schauen — Blick bleibt geradeaus."
+  },
+  {
+    id: 7,
+    titel: "Nacken-Wärme-Atmung",
+    beschreibung: "Lege eine warme Hand in den Nacken. Atme tief ein — und beim langen Ausatmen stell dir vor die Hand gibt Wärme ab. 6 Atemzüge.",
+    dauer: "3 Min",
+    symptome: ["nackenschmerzen", "verspannungen"],
+    stimmung: ["gestresst", "angespannt", "müde"],
+    situation: ["zuhause", "abends"],
+    säule: "craniosacral",
+    tipp: "Der Nacken braucht keine Kraft — er braucht Wärme und Erlaubnis."
+  },
+  {
+    id: 8,
+    titel: "Langsames Nicken",
+    beschreibung: "Nicke ganz langsam mit dem Kopf — nur 2–3 cm nach vorne und zurück. Wo zieht es? Bleibe an dieser Stelle kurz in der Dehnung. 5x pro Seite.",
+    dauer: "2 Min",
+    symptome: ["nackenschmerzen", "kopfschmerzen"],
+    stimmung: ["angespannt", "gestresst"],
+    situation: ["zuhause", "büro"],
+    säule: "parietal",
+    tipp: "Kleine Bewegungen wirken tiefer als große."
+  },
+  {
+    id: 9,
+    titel: "Schultern fallen lassen",
+    beschreibung: "Ziehe beide Schultern bewusst hoch bis zu den Ohren — halte 3 Sekunden — und lass sie dann komplett fallen. Spür den Unterschied. 5 Mal.",
+    dauer: "1 Min",
+    symptome: ["nackenschmerzen", "verspannungen", "kopfschmerzen"],
+    stimmung: ["gestresst", "überwältigt", "angespannt"],
+    situation: ["zuhause", "büro", "unterwegs"],
+    säule: "parietal",
+    tipp: "Das Fallenlassen ist die eigentliche Übung — nicht das Hochziehen."
+  },
+  {
+    id: 10,
+    titel: "Atemhilfsmuskel-Pause",
+    beschreibung: "Atme bewusst in den Bauch — nicht in die Brust. Spür wie die Nackenmuskeln dabei loslassen. 8 tiefe Bauchatmungen.",
+    dauer: "3 Min",
+    symptome: ["nackenschmerzen", "verspannungen"],
+    stimmung: ["gestresst", "angespannt"],
+    situation: ["zuhause", "büro", "unterwegs"],
+    säule: "parietal",
+    tipp: "Nackenmuskeln sind Atemhilfsmuskeln. Wenn das Zwerchfell atmet dürfen sie pausieren."
+  },
+  {
+    id: 11,
+    titel: "Rücken in den Boden atmen",
+    beschreibung: "Lege dich auf den Rücken, Knie angewinkelt. Atme tief in den Bauch — spür ob die LWS dabei loslässt oder starr bleibt. 10 Atemzüge.",
+    dauer: "3 Min",
+    symptome: ["rückenschmerzen"],
+    stimmung: ["erschöpft", "angespannt", "müde"],
+    situation: ["zuhause", "abends"],
+    säule: "parietal",
+    tipp: "Die LWS muss nicht den Boden berühren — sie darf einfach sein."
+  },
+  {
+    id: 12,
+    titel: "Becken schaukeln",
+    beschreibung: "Lege dich auf den Rücken, Knie angewinkelt. Schaukle das Becken ganz sanft vor und zurück — ohne Kraft, nur Schwung. 2 Minuten.",
+    dauer: "2 Min",
+    symptome: ["rückenschmerzen", "becken", "hüftschmerzen"],
+    stimmung: ["angespannt", "erschöpft"],
+    situation: ["zuhause", "abends"],
+    säule: "parietal",
+    tipp: "Je kleiner die Bewegung, desto tiefer die Wirkung."
+  },
+  {
+    id: 13,
+    titel: "Knie zur Brust",
+    beschreibung: "Ziehe im Liegen ein Knie zur Brust und halte es mit beiden Händen. Atme dabei tief aus. 30 Sekunden pro Seite, 3x wechseln.",
+    dauer: "3 Min",
+    symptome: ["rückenschmerzen", "hüftschmerzen"],
+    stimmung: ["angespannt", "müde"],
+    situation: ["zuhause", "abends", "morgens"],
+    säule: "parietal",
+    tipp: "Beim Ausatmen noch etwas mehr Zug geben."
+  },
+  {
+    id: 14,
+    titel: "Katze-Kuh",
+    beschreibung: "Im Vierfüßler: Beim Einatmen Rücken hohlmachen (Kuh), beim Ausatmen runden (Katze). Langsam, fließend, 10 Wiederholungen.",
+    dauer: "3 Min",
+    symptome: ["rückenschmerzen", "verspannungen"],
+    stimmung: ["angespannt", "steif", "müde"],
+    situation: ["zuhause", "morgens"],
+    säule: "parietal",
+    tipp: "Die Bewegung kommt aus der Wirbelsäule — nicht nur aus dem Kopf oder dem Hintern."
+  },
+  {
+    id: 15,
+    titel: "Handtuch-BWS-Mobilisation",
+    beschreibung: "Rolle ein Handtuch quer zusammen. Lege es unter die Brustwirbelsäule im Liegen. Atme tief ein und lass den Brustkorb über das Handtuch öffnen. 5 Minuten.",
+    dauer: "5 Min",
+    symptome: ["rückenschmerzen", "verspannungen", "brustkorb"],
+    stimmung: ["angespannt", "erschöpft"],
+    situation: ["zuhause", "abends"],
+    säule: "parietal",
+    tipp: "Das Handtuch sollte unter der BWS liegen — nicht unter der LWS."
+  },
+  {
+    id: 16,
+    titel: "Nieren wärmen",
+    beschreibung: "Lege beide Hände auf die Nierengegend (unterer Rücken, auf Höhe der letzten Rippen). Atme warm dorthin — stell dir vor die Hände geben Wärme ab. 5 Minuten.",
+    dauer: "5 Min",
+    symptome: ["rückenschmerzen"],
+    stimmung: ["erschöpft", "ängstlich", "müde"],
+    situation: ["zuhause", "abends"],
+    säule: "viszeral",
+    tipp: "Bei Stress und Erschöpfung sind die Nieren oft mitbetroffen — Wärme hilft."
+  },
+  {
+    id: 17,
+    titel: "Bauchatmung mit Wärme",
+    beschreibung: "Lege eine Hand auf den Oberbauch, eine auf den Unterbauch. Atme tief in beide Hände. Spür wie sich der Bauch hebt. 8 Atemzüge.",
+    dauer: "3 Min",
+    symptome: ["bauchbeschwerden", "blähungen", "stress"],
+    stimmung: ["angespannt", "gestresst", "ängstlich"],
+    situation: ["zuhause", "abends"],
+    säule: "viszeral",
+    tipp: "Der Atem massiert die Organe von innen."
+  },
+  {
+    id: 18,
+    titel: "Bauchuhrzeiger-Massage",
+    beschreibung: "Lege die flache Hand auf den Bauch. Massiere im Uhrzeigersinn — sanft, kreisend, vom rechten Unterbauch über den Oberbauch zum linken Unterbauch. 3 Minuten.",
+    dauer: "3 Min",
+    symptome: ["bauchbeschwerden", "blähungen", "verstopfung"],
+    stimmung: ["angespannt", "müde"],
+    situation: ["zuhause", "morgens", "abends"],
+    säule: "viszeral",
+    tipp: "Uhrzeigersinn folgt dem Darmverlauf — immer in diese Richtung."
+  },
+  {
+    id: 19,
+    titel: "Knie-zur-Brust im Liegen",
+    beschreibung: "Ziehe beide Knie zur Brust und halte sie. Schaukle sanft vor und zurück. 2 Minuten. Hilft bei Blähungen und Darmkrämpfen.",
+    dauer: "2 Min",
+    symptome: ["bauchbeschwerden", "blähungen", "rückenschmerzen"],
+    stimmung: ["angespannt", "müde"],
+    situation: ["zuhause", "abends"],
+    säule: "viszeral",
+    tipp: "Wärme von einer Wärmflasche zusätzlich verstärkt die Wirkung."
+  },
+  {
+    id: 20,
+    titel: "Warmes Wasser morgens",
+    beschreibung: "Trinke ein großes Glas warmes Wasser nüchtern — langsam, in kleinen Schlucken, aufrecht sitzend. Danach 5 Minuten warten bevor du isst.",
+    dauer: "5 Min",
+    symptome: ["bauchbeschwerden", "verstopfung"],
+    stimmung: ["müde"],
+    situation: ["zuhause", "morgens"],
+    säule: "viszeral",
+    tipp: "Warmes Wasser aktiviert die Verdauung und unterstützt die Leber-Lymphe."
+  },
+  {
+    id: 21,
+    titel: "Solarplexus loslassen",
+    beschreibung: "Lege die Fingerkuppen auf den Oberbauch (zwischen Bauchnabel und Brustbein). Atme tief ein — und beim langen Ausatmen lass den Bauch komplett weich werden. 8x.",
+    dauer: "3 Min",
+    symptome: ["bauchbeschwerden", "stress", "angst"],
+    stimmung: ["ängstlich", "gestresst", "überwältigt"],
+    situation: ["zuhause", "büro"],
+    säule: "craniosacral",
+    tipp: "Der Solarplexus ist das größte Nervengeflecht außerhalb des Gehirns — er reagiert direkt auf Stress."
+  },
+  {
+    id: 22,
+    titel: "Energie-Atmung (Kapalabhati)",
+    beschreibung: "Kurze, kräftige Ausatmungen durch die Nase — die Einatmung kommt von selbst. 30 Stöße, dann normal atmen. 3 Runden.",
+    dauer: "3 Min",
+    symptome: ["erschöpfung"],
+    stimmung: ["müde", "erschöpft"],
+    situation: ["zuhause", "büro", "morgens"],
+    säule: "parietal",
+    tipp: "Nicht bei Schwindel, Schwangerschaft oder Bluthochdruck."
+  },
+  {
+    id: 23,
+    titel: "Barfuß auf dem Boden",
+    beschreibung: "Ziehe Schuhe und Socken aus. Gehe 5 Minuten barfuß — drinnen oder draußen. Spür jeden Schritt bewusst: Ferse, Fußsohle, Zehen.",
+    dauer: "5 Min",
+    symptome: ["erschöpfung"],
+    stimmung: ["müde", "erschöpft", "unruhig"],
+    situation: ["zuhause", "unterwegs"],
+    säule: "parietal",
+    tipp: "Erdung über die Füße aktiviert das Nervensystem sanft ohne es zu überfordern."
+  },
+  {
+    id: 24,
+    titel: "Supine Rest (Shavasana)",
+    beschreibung: "Lege dich flach auf den Rücken, Arme neben dem Körper, Handflächen nach oben. Schließe die Augen. Atme normal. 10 Minuten sein.",
+    dauer: "10 Min",
+    symptome: ["erschöpfung"],
+    stimmung: ["erschöpft", "überwältigt", "müde"],
+    situation: ["zuhause", "abends"],
+    säule: "craniosacral",
+    tipp: "Das ist keine Faulheit — das ist aktive Regeneration."
+  },
+  {
+    id: 25,
+    titel: "Kaltes Wasser ins Gesicht",
+    beschreibung: "Spritze 3x kaltes Wasser ins Gesicht. Atme danach tief durch die Nase ein. Aktiviert den Tauchreflex und den Vagusnerv sofort.",
+    dauer: "1 Min",
+    symptome: ["erschöpfung"],
+    stimmung: ["müde", "erschöpft"],
+    situation: ["zuhause", "büro"],
+    säule: "craniosacral",
+    tipp: "Der Tauchreflex ist einer der stärksten Vagus-Aktivatoren die es gibt."
+  },
+  {
+    id: 26,
+    titel: "Selbst-Umarmung",
+    beschreibung: "Umfasse dich selbst mit beiden Armen — lege die Hände auf die Schulterblätter. Atme tief in den Rücken. Spür die Wärme deiner eigenen Hände. 5 Atemzüge.",
+    dauer: "2 Min",
+    symptome: ["erschöpfung", "stress"],
+    stimmung: ["überwältigt", "traurig", "erschöpft"],
+    situation: ["zuhause", "büro", "unterwegs"],
+    säule: "craniosacral",
+    tipp: "Berührung aktiviert Oxytocin — auch die eigene."
+  },
+  {
+    id: 27,
+    titel: "Box-Atmung",
+    beschreibung: "4 Sekunden einatmen — 4 Sekunden halten — 4 Sekunden ausatmen — 4 Sekunden halten. Das ist eine Runde. 6 Runden.",
+    dauer: "3 Min",
+    symptome: ["angst", "stress", "panik"],
+    stimmung: ["ängstlich", "gestresst", "überwältigt"],
+    situation: ["zuhause", "büro", "unterwegs"],
+    säule: "craniosacral",
+    tipp: "Stell dir beim Atmen ein Quadrat vor — jede Seite ist eine Phase."
+  },
+  {
+    id: 28,
+    titel: "Verlängerte Ausatmung",
+    beschreibung: "Atme 4 Sekunden ein — atme 8 Sekunden aus. Kein Halten. Einfach: aus ist länger als ein. 10 Atemzüge.",
+    dauer: "3 Min",
+    symptome: ["angst", "stress", "schlafprobleme"],
+    stimmung: ["ängstlich", "gestresst", "unruhig"],
+    situation: ["zuhause", "büro", "unterwegs", "abends"],
+    säule: "craniosacral",
+    tipp: "Das Ausatmen aktiviert den Parasympathikus — je länger, desto mehr Ruhe."
+  },
+  {
+    id: 29,
+    titel: "5-4-3-2-1 Grounding",
+    beschreibung: "Benenne: 5 Dinge die du siehst — 4 die du hörst — 3 die du fühlst — 2 die du riechst — 1 das du schmeckst. Laut oder leise.",
+    dauer: "3 Min",
+    symptome: ["angst", "panik", "stress"],
+    stimmung: ["ängstlich", "überwältigt", "unruhig"],
+    situation: ["zuhause", "büro", "unterwegs"],
+    säule: "craniosacral",
+    tipp: "Grounding holt das Nervensystem aus dem Alarmmodus zurück in den Moment."
+  },
+  {
+    id: 30,
+    titel: "Summen",
+    beschreibung: "Summe einen langen Ton beim Ausatmen — mmmm. Spür die Vibration im Hals und in der Brust. 10 Atemzüge lang summen.",
+    dauer: "3 Min",
+    symptome: ["angst", "stress", "nackenschmerzen"],
+    stimmung: ["ängstlich", "gestresst", "angespannt"],
+    situation: ["zuhause", "büro", "unterwegs"],
+    säule: "craniosacral",
+    tipp: "Summen stimuliert den Vagusnerv direkt über die Vibration im Kehlkopf."
+  },
+  {
+    id: 31,
+    titel: "Hände öffnen",
+    beschreibung: "Öffne beide Hände ganz weit — alle Finger gestreckt, Handflächen nach oben. Halte 5 Sekunden. Dann komplett loslassen. 5 Mal wiederholen.",
+    dauer: "1 Min",
+    symptome: ["angst", "stress", "verspannungen"],
+    stimmung: ["angespannt", "gestresst", "überwältigt"],
+    situation: ["zuhause", "büro", "unterwegs"],
+    säule: "craniosacral",
+    tipp: "Offene Hände signalisieren dem Nervensystem: ich muss nichts festhalten."
+  },
+  {
+    id: 32,
+    titel: "Physiologischer Seufzer",
+    beschreibung: "Atme durch die Nase ein — dann nochmal ein kleines bisschen mehr einatmen (doppelter Einzug) — dann lang und tief durch den Mund ausatmen. 5x.",
+    dauer: "2 Min",
+    symptome: ["angst", "stress", "panik"],
+    stimmung: ["ängstlich", "überwältigt", "angespannt"],
+    situation: ["zuhause", "büro", "unterwegs"],
+    säule: "craniosacral",
+    tipp: "Der doppelte Einzug öffnet kollabierte Lungenbläschen und beruhigt das Nervensystem schnell."
+  },
+  {
+    id: 33,
+    titel: "Kiefer loslassen",
+    beschreibung: "Lippen aufeinander, Zähne nicht berühren — das ist die Kieferruheposition. Halte sie 2 Minuten bewusst. Dann Mund leicht öffnen und gähnen.",
+    dauer: "2 Min",
+    symptome: ["stress", "angst", "verspannungen", "kopfschmerzen"],
+    stimmung: ["angespannt", "gestresst"],
+    situation: ["zuhause", "büro", "unterwegs"],
+    säule: "parietal",
+    tipp: "Gähnen ist ein natürlicher Reset des Kiefergelenks."
+  },
+  {
+    id: 34,
+    titel: "Kalte Hände — Warmes Herz",
+    beschreibung: "Lege eine Hand aufs Herz. Atme tief ein — beim Ausatmen stell dir vor die Brust wird weiter. Nicht drücken. Nur Erlaubnis geben. 8 Atemzüge.",
+    dauer: "3 Min",
+    symptome: ["angst", "stress"],
+    stimmung: ["ängstlich", "traurig", "überwältigt"],
+    situation: ["zuhause", "büro", "unterwegs", "abends"],
+    säule: "craniosacral",
+    tipp: "Die Hand aufs Herz ist keine Geste — sie aktiviert den Vagusnerv über Berührung."
+  },
+  {
+    id: 35,
+    titel: "Sicherheitsraum visualisieren",
+    beschreibung: "Schließe die Augen. Stell dir einen Ort vor an dem du dich vollkommen sicher fühlst. Wie riecht es dort? Was hörst du? Wie fühlt sich der Boden an? 5 Minuten.",
+    dauer: "5 Min",
+    symptome: ["angst", "stress"],
+    stimmung: ["ängstlich", "überwältigt", "unruhig"],
+    situation: ["zuhause", "abends"],
+    säule: "craniosacral",
+    tipp: "Das Nervensystem unterscheidet nicht zwischen real und vorgestellt."
+  },
+  {
+    id: 36,
+    titel: "4-7-8 Atemtechnik",
+    beschreibung: "Einatmen: 4 Sekunden — Halten: 7 Sekunden — Ausatmen: 8 Sekunden. 4 Runden. Macht schläfrig.",
+    dauer: "3 Min",
+    symptome: ["schlafprobleme"],
+    stimmung: ["unruhig", "angespannt", "gestresst"],
+    situation: ["zuhause", "abends"],
+    säule: "craniosacral",
+    tipp: "Wenn 7 Sekunden zu lang sind — einfach das Verhältnis 1:1.75:2 behalten."
+  },
+  {
+    id: 37,
+    titel: "Füße wärmen",
+    beschreibung: "Warme Socken anziehen oder Füße in warmem Wasser baden. Warme Füße verlagern Blut aus dem Kopf in die Peripherie — das macht schläfrig.",
+    dauer: "10 Min",
+    symptome: ["schlafprobleme"],
+    stimmung: ["unruhig", "gestresst"],
+    situation: ["zuhause", "abends"],
+    säule: "viszeral",
+    tipp: "Das ist Physiologie: Warme Füße = Blutumverteilung = Schläfrigkeit."
+  },
+  {
+    id: 38,
+    titel: "Body Scan",
+    beschreibung: "Lege dich hin. Wandere mit der Aufmerksamkeit vom Scheitel bis zu den Füßen — Körperteil für Körperteil. Spür ohne zu bewerten. Atme dabei ruhig.",
+    dauer: "10 Min",
+    symptome: ["schlafprobleme", "stress"],
+    stimmung: ["unruhig", "angespannt", "gestresst"],
+    situation: ["zuhause", "abends"],
+    säule: "craniosacral",
+    tipp: "Wenn Gedanken kommen — nur beobachten, nicht folgen. Zurück zum Körper."
+  },
+  {
+    id: 39,
+    titel: "Wechselatmung (Nadi Shodhana)",
+    beschreibung: "Rechtes Nasenloch mit Daumen schließen — links einatmen. Beide schließen — kurz halten. Links mit Ringfinger schließen — rechts ausatmen. Dann umgekehrt. 8 Runden.",
+    dauer: "5 Min",
+    symptome: ["schlafprobleme", "angst", "stress"],
+    stimmung: ["unruhig", "ängstlich"],
+    situation: ["zuhause", "abends"],
+    säule: "craniosacral",
+    tipp: "Wechselatmung balanciert beide Gehirnhälften und beruhigt das Nervensystem."
+  },
+  {
+    id: 40,
+    titel: "Gedanken aufschreiben",
+    beschreibung: "Schreibe vor dem Schlafen alles auf was dich beschäftigt — ohne Filter, ohne Struktur. Schließe dann das Notizbuch. Deine Gedanken sind jetzt außerhalb deines Kopfes.",
+    dauer: "5 Min",
+    symptome: ["schlafprobleme", "stress"],
+    stimmung: ["unruhig", "überwältigt"],
+    situation: ["zuhause", "abends"],
+    säule: "craniosacral",
+    tipp: "Das Notizbuch übernimmt die Wacht — dein Kopf darf loslassen."
+  },
+  {
+    id: 41,
+    titel: "Schulterkreisen",
+    beschreibung: "Kreise mit beiden Schultern — langsam, groß, bewusst. 8x vorwärts, 8x rückwärts. Spür wo es zieht oder knackt.",
+    dauer: "2 Min",
+    symptome: ["verspannungen", "nackenschmerzen"],
+    stimmung: ["angespannt", "steif"],
+    situation: ["zuhause", "büro", "unterwegs"],
+    säule: "parietal",
+    tipp: "Rückwärts kreisen öffnet den Brustkorb mehr als vorwärts."
+  },
+  {
+    id: 42,
+    titel: "Faszienrolle — Oberschenkel",
+    beschreibung: "Lege die Oberschenkel auf eine Faszienrolle oder ein Handtuch. Rolle langsam von der Leiste bis zum Knie. An schmerzhaften Stellen 20 Sekunden pausieren.",
+    dauer: "5 Min",
+    symptome: ["verspannungen", "rückenschmerzen"],
+    stimmung: ["angespannt", "steif"],
+    situation: ["zuhause"],
+    säule: "parietal",
+    tipp: "Langsam ist mehr. Ein Zentimeter pro Sekunde ist ideal."
+  },
+  {
+    id: 43,
+    titel: "Bewegen ohne Plan",
+    beschreibung: "Stelle Musik an. Bewege dich so wie dein Körper es gerade will — keine Choreographie, kein Ziel. Einfach 5 Minuten den Körper machen lassen.",
+    dauer: "5 Min",
+    symptome: ["verspannungen", "stress", "erschöpfung"],
+    stimmung: ["angespannt", "steif", "unruhig"],
+    situation: ["zuhause"],
+    säule: "parietal",
+    tipp: "Intuitives Bewegen löst Spannungsmuster die gezielte Übungen nicht erreichen."
+  },
+  {
+    id: 44,
+    titel: "Türrahmen-Brustöffner",
+    beschreibung: "Stelle dich in einen Türrahmen. Lege beide Unterarme an den Rahmen. Lehne dich leicht nach vorne bis du eine Dehnung in der Brust spürst. 30 Sekunden halten.",
+    dauer: "1 Min",
+    symptome: ["verspannungen", "brustkorb", "nackenschmerzen"],
+    stimmung: ["angespannt", "steif"],
+    situation: ["zuhause", "büro"],
+    säule: "parietal",
+    tipp: "Die Arme können hoch, mittig oder tief positioniert werden — probiere alle drei."
+  },
+  {
+    id: 45,
+    titel: "Psoas-Schaukeln",
+    beschreibung: "Lege dich auf den Rücken, Knie angewinkelt. Schaukle die Knie sanft von rechts nach links — ohne Kraft, nur Schwung. 3 Minuten.",
+    dauer: "3 Min",
+    symptome: ["verspannungen", "rückenschmerzen", "hüftschmerzen"],
+    stimmung: ["angespannt", "steif", "erschöpft"],
+    situation: ["zuhause", "abends"],
+    säule: "parietal",
+    tipp: "Der Psoas entspannt sich am besten durch Bewegung — nicht durch Dehnung."
+  },
+  {
+    id: 46,
+    titel: "Morgen-Körperscan",
+    beschreibung: "Bevor du aufstehst: Bleibe noch 2 Minuten liegen. Wandere mit der Aufmerksamkeit durch den Körper — wo ist Schwere? Wo ist Leichtigkeit? Kein Bewerten.",
+    dauer: "2 Min",
+    symptome: ["erschöpfung"],
+    stimmung: ["müde"],
+    situation: ["zuhause", "morgens"],
+    säule: "craniosacral",
+    tipp: "Der erste Gedanke des Tages setzt den Ton. Fang mit dem Körper an."
+  },
+  {
+    id: 47,
+    titel: "Arme heben beim Einatmen",
+    beschreibung: "Stehe aufrecht. Beim Einatmen Arme langsam nach oben heben. Beim Ausatmen langsam senken. 8 Mal — ganz in deinem Tempo.",
+    dauer: "2 Min",
+    symptome: ["erschöpfung", "verspannungen"],
+    stimmung: ["müde", "steif"],
+    situation: ["zuhause", "morgens"],
+    säule: "parietal",
+    tipp: "Atem und Bewegung zusammen sind mächtiger als beide alleine."
+  },
+  {
+    id: 48,
+    titel: "Warmes Wasser mit Zitrone",
+    beschreibung: "Trinke ein großes Glas warmes Wasser mit einem Spritzer Zitrone — nüchtern, langsam, aufrecht. Aktiviert Leber, Lymphe und Verdauung.",
+    dauer: "5 Min",
+    symptome: ["erschöpfung", "bauchbeschwerden"],
+    stimmung: ["müde"],
+    situation: ["zuhause", "morgens"],
+    säule: "viszeral",
+    tipp: "Die Leber arbeitet nachts auf Hochtouren — warmes Wasser morgens unterstützt sie beim Abschluss."
+  },
+  {
+    id: 49,
+    titel: "Drehung im Sitzen",
+    beschreibung: "Sitze aufrecht. Drehe den Oberkörper beim Einatmen nach rechts — komme beim Ausatmen zurück. Dann links. 6 Mal pro Seite.",
+    dauer: "2 Min",
+    symptome: ["verspannungen", "rückenschmerzen"],
+    stimmung: ["steif", "müde"],
+    situation: ["zuhause", "büro", "morgens"],
+    säule: "parietal",
+    tipp: "Die BWS mobilisiert sich — Schultern und Schulterblätter werden frei."
+  },
+  {
+    id: 50,
+    titel: "Barfuß-Morgengang",
+    beschreibung: "Gehe die ersten 5–10 Minuten nach dem Aufstehen barfuß — auf verschiedenen Untergründen wenn möglich. Fließen und spüren.",
+    dauer: "10 Min",
+    symptome: ["erschöpfung"],
+    stimmung: ["müde"],
+    situation: ["zuhause", "morgens"],
+    säule: "parietal",
+    tipp: "Die Füße wecken den gesamten Körper — über 70.000 Nervenenden in der Fußsohle."
+  },
+  {
+    id: 51,
+    titel: "Sanft landen",
+    beschreibung: "Lege dich auf den Rücken. Lasse jeden Körperteil schwer werden — Beine, Becken, Rücken, Schultern, Kopf. Atme ruhig. 10 Minuten sein.",
+    dauer: "10 Min",
+    symptome: ["schlafprobleme", "stress"],
+    stimmung: ["unruhig", "gestresst", "überwältigt"],
+    situation: ["zuhause", "abends"],
+    säule: "craniosacral",
+    tipp: "Schwere ist Sicherheit — lass die Schwerkraft arbeiten."
+  },
+  {
+    id: 52,
+    titel: "Füße hochlegen",
+    beschreibung: "Lege die Beine an die Wand — Gesäß nahe zur Wand, Beine senkrecht hoch. 10 Minuten. Ideal für geschwollene Beine und ein überlastetes Nervensystem.",
+    dauer: "10 Min",
+    symptome: ["erschöpfung", "schlafprobleme", "stress"],
+    stimmung: ["erschöpft", "müde"],
+    situation: ["zuhause", "abends"],
+    säule: "viszeral",
+    tipp: "Der venöse Rückfluss wird unterstützt — das Herz bekommt Pause."
+  },
+  {
+    id: 53,
+    titel: "Abendritual: Drei Dankbarkeiten",
+    beschreibung: "Schreibe oder denke an drei Dinge für die du heute dankbar bist — auch kleine. Das verschiebt den Fokus des Nervensystems von Bedrohung zu Sicherheit.",
+    dauer: "3 Min",
+    symptome: ["schlafprobleme", "stress", "angst"],
+    stimmung: ["traurig", "unruhig", "überwältigt"],
+    situation: ["zuhause", "abends"],
+    säule: "craniosacral",
+    tipp: "Dankbarkeit ist kein Positivity-Zwang — es ist Neurologie."
+  },
+  {
+    id: 54,
+    titel: "Warmes Bad oder Dusche",
+    beschreibung: "Dusche oder bade warm — lass das Wasser auf den Nacken und den Rücken laufen. Atme dabei tief. Danach sofort in warme Kleidung.",
+    dauer: "15 Min",
+    symptome: ["verspannungen", "schlafprobleme", "stress"],
+    stimmung: ["angespannt", "gestresst", "unruhig"],
+    situation: ["zuhause", "abends"],
+    säule: "parietal",
+    tipp: "Das Abkühlen nach dem warmen Bad löst Melatonin aus."
+  },
+  {
+    id: 55,
+    titel: "Digital Detox — 1 Stunde",
+    beschreibung: "Lege alle Bildschirme weg — eine Stunde vor dem Schlafen. Kein Scrollen, kein Strom. Lesen, Musik, Gespräch oder einfach sein.",
+    dauer: "60 Min",
+    symptome: ["schlafprobleme", "stress"],
+    stimmung: ["unruhig", "gestresst"],
+    situation: ["zuhause", "abends"],
+    säule: "craniosacral",
+    tipp: "Blaues Licht unterdrückt Melatonin — aber das Nervensystem braucht auch einfach Ruhe vom Informationsstrom."
+  },
+  {
+    id: 56,
+    titel: "Mikropause — 20-20-20",
+    beschreibung: "Alle 20 Minuten: Schaue 20 Sekunden auf etwas 20 Fuß (6 Meter) entfernt. Blinzle bewusst. Atme einmal tief durch.",
+    dauer: "1 Min",
+    symptome: ["kopfschmerzen", "erschöpfung"],
+    stimmung: ["müde", "gestresst"],
+    situation: ["büro"],
+    säule: "parietal",
+    tipp: "Die Augen entspannen sich — und das gesamte Nervensystem mit ihnen."
+  },
+  {
+    id: 57,
+    titel: "Steh-Pause",
+    beschreibung: "Stehe jede Stunde einmal auf. Gehe 2 Minuten. Schüttele die Hände aus. Drehe den Kopf langsam von rechts nach links. Setze dich neu hin.",
+    dauer: "2 Min",
+    symptome: ["verspannungen", "rückenschmerzen", "erschöpfung"],
+    stimmung: ["steif", "müde"],
+    situation: ["büro"],
+    säule: "parietal",
+    tipp: "Sitzen ist kein Ruhezustand für den Körper — er braucht Unterbrechung."
+  },
+  {
+    id: 58,
+    titel: "Schreibtisch-Brustöffner",
+    beschreibung: "Sitze am vorderen Stuhlrand. Lege die Hände hinter den Kopf. Öffne die Ellbogen weit — atme tief ein. Beim Ausatmen Ellbogen wieder zusammen. 8x.",
+    dauer: "2 Min",
+    symptome: ["verspannungen", "nackenschmerzen", "rückenschmerzen"],
+    stimmung: ["steif", "angespannt"],
+    situation: ["büro"],
+    säule: "parietal",
+    tipp: "Öffnet die BWS die durch stundenlange Bildschirmarbeit kollabiert."
+  },
+  {
+    id: 59,
+    titel: "Stille Bauchatmung im Meeting",
+    beschreibung: "Atme tief in den Bauch — ohne dass jemand es sieht. Beim Ausatmen lass die Schultern fallen. Niemand merkt es. Dein Nervensystem schon.",
+    dauer: "1 Min",
+    symptome: ["stress", "angst"],
+    stimmung: ["gestresst", "ängstlich", "angespannt"],
+    situation: ["büro", "unterwegs"],
+    säule: "craniosacral",
+    tipp: "Die unsichtbarste Beruhigungstechnik die es gibt."
+  },
+  {
+    id: 60,
+    titel: "Mittagspausen-Spaziergang",
+    beschreibung: "Gehe in der Mittagspause 10–15 Minuten nach draußen — ohne Handy. Atme durch die Nase. Spür den Boden unter den Füßen.",
+    dauer: "15 Min",
+    symptome: ["stress", "erschöpfung", "kopfschmerzen"],
+    stimmung: ["gestresst", "müde", "überwältigt"],
+    situation: ["büro"],
+    säule: "craniosacral",
+    tipp: "Natur und Bewegung zusammen sind das wirksamste Stressmittel das es gibt."
+  },
+  {
+    id: 61,
+    titel: "Bewusstes Gehen",
+    beschreibung: "Gehe — aber bewusst. Spür jeden Schritt: Abstoß, Schwung, Landen. Atme durch die Nase. Schaue nach vorne, nicht aufs Handy. 5 Minuten.",
+    dauer: "5 Min",
+    symptome: ["stress", "angst", "erschöpfung"],
+    stimmung: ["gestresst", "unruhig", "müde"],
+    situation: ["unterwegs"],
+    säule: "parietal",
+    tipp: "Bewusstes Gehen ist Meditation in Bewegung."
+  },
+  {
+    id: 62,
+    titel: "Nasenatmung erzwingen",
+    beschreibung: "Schließe bewusst den Mund und atme nur durch die Nase — für die nächsten 10 Minuten. Beim Gehen, beim Sitzen, beim Warten.",
+    dauer: "10 Min",
+    symptome: ["stress", "erschöpfung"],
+    stimmung: ["gestresst", "müde"],
+    situation: ["unterwegs", "büro", "zuhause"],
+    säule: "parietal",
+    tipp: "Nasenatmung filtert, befeuchtet, verlangsamt — und aktiviert den Parasympathikus."
+  },
+  {
+    id: 63,
+    titel: "Warteschlangen-Übung",
+    beschreibung: "In der Warteschlange: Stehe auf beiden Beinen gleichmäßig. Spür den Boden. Atme tief. Lass die Schultern fallen. Lächle innerlich.",
+    dauer: "2 Min",
+    symptome: ["stress", "angst"],
+    stimmung: ["gestresst", "unruhig", "ängstlich"],
+    situation: ["unterwegs"],
+    säule: "craniosacral",
+    tipp: "Warten ist eine unterschätzte Übungsmöglichkeit."
+  },
+  {
+    id: 64,
+    titel: "Im Auto: Lenkrad loslassen",
+    beschreibung: "An der roten Ampel: Lockere den Griff um das Lenkrad. Spür ob deine Schultern hochgezogen sind. Lass sie fallen. Atme tief aus.",
+    dauer: "1 Min",
+    symptome: ["stress", "verspannungen", "nackenschmerzen"],
+    stimmung: ["gestresst", "angespannt"],
+    situation: ["unterwegs"],
+    säule: "parietal",
+    tipp: "Rote Ampeln sind Einladungen zur Mikropause."
+  },
+  {
+    id: 65,
+    titel: "Kalt-Warm-Wechsel Hände",
+    beschreibung: "Halte die Hände abwechselnd unter kaltes und warmes Wasser — je 20 Sekunden, 4 Runden. Aktiviert die Durchblutung und das Nervensystem.",
+    dauer: "3 Min",
+    symptome: ["erschöpfung", "angst"],
+    stimmung: ["müde", "unruhig"],
+    situation: ["zuhause", "büro", "unterwegs"],
+    säule: "viszeral",
+    tipp: "Temperaturwechsel trainieren das Gefäßsystem und wecken auf."
+  },
+  {
+    id: 66,
+    titel: "Hüftkreisen im Stehen",
+    beschreibung: "Stehe hüftbreit. Kreise mit den Hüften — langsam, groß, fließend. 8x in jede Richtung. Lass die Bewegung sich ausweiten.",
+    dauer: "2 Min",
+    symptome: ["hüftschmerzen", "rückenschmerzen", "verspannungen"],
+    stimmung: ["steif", "angespannt"],
+    situation: ["zuhause", "büro"],
+    säule: "parietal",
+    tipp: "Die Hüfte ist der Ort wo wir Kontrolle festhalten — Kreisen hilft loslassen."
+  },
+  {
+    id: 67,
+    titel: "Beckenboden-Einatmung",
+    beschreibung: "Atme tief in den Unterbauch — und lass beim Ausatmen den Beckenboden bewusst los. Nicht anspannen, nicht halten. Nur loslassen. 10 Atemzüge.",
+    dauer: "3 Min",
+    symptome: ["hüftschmerzen", "rückenschmerzen", "bauchbeschwerden"],
+    stimmung: ["angespannt", "gestresst"],
+    situation: ["zuhause", "abends"],
+    säule: "parietal",
+    tipp: "Viele Menschen können den Beckenboden nicht mehr bewusst loslassen — diese Übung trainiert genau das."
+  },
+  {
+    id: 68,
+    titel: "Schmetterling im Liegen",
+    beschreibung: "Lege dich auf den Rücken. Bringe die Fußsohlen zusammen, Knie fallen zur Seite. Lasse die Schwerkraft die Hüften öffnen. 5 Minuten sein.",
+    dauer: "5 Min",
+    symptome: ["hüftschmerzen", "verspannungen", "stress"],
+    stimmung: ["angespannt", "steif"],
+    situation: ["zuhause", "abends"],
+    säule: "parietal",
+    tipp: "Kein Druck nach unten — nur Erlaubnis geben."
+  },
+  {
+    id: 69,
+    titel: "Sitzbein spüren",
+    beschreibung: "Sitze aufrecht auf einem harten Stuhl. Spür beide Sitzbeine gleichmäßig. Atme warm ins Becken. Stell dir vor die Schale wird weit. 5 Atemzüge.",
+    dauer: "2 Min",
+    symptome: ["hüftschmerzen", "rückenschmerzen", "stress"],
+    stimmung: ["angespannt", "unruhig"],
+    situation: ["zuhause", "büro"],
+    säule: "craniosacral",
+    tipp: "Das Becken braucht keine Anspannung um zu tragen — es braucht Vertrauen."
+  },
+  {
+    id: 70,
+    titel: "Liegende Taube (Yin)",
+    beschreibung: "Lege dich auf den Rücken. Lege das rechte Knöchel auf das linke Knie. Ziehe das linke Bein zur Brust. Halte 2 Minuten. Seite wechseln.",
+    dauer: "5 Min",
+    symptome: ["hüftschmerzen", "rückenschmerzen"],
+    stimmung: ["angespannt", "steif"],
+    situation: ["zuhause", "abends"],
+    säule: "parietal",
+    tipp: "Die liegende Variante ist sanfter als die klassische Taube — ideal bei Hüftproblemen."
+  },
+  {
+    id: 71,
+    titel: "Fußmassage mit Tennisball",
+    beschreibung: "Stelle einen Fuß auf einen Tennisball oder eine Faszienrolle. Rolle langsam über die Fußsohle — von der Ferse bis zu den Zehen. 2 Minuten pro Fuß.",
+    dauer: "5 Min",
+    symptome: ["erschöpfung", "verspannungen"],
+    stimmung: ["erschöpft", "müde"],
+    situation: ["zuhause"],
+    säule: "parietal",
+    tipp: "70.000 Nervenenden in der Fußsohle — Massage dort wirkt auf den ganzen Körper."
+  },
+  {
+    id: 72,
+    titel: "Zehenspitzen-Heben",
+    beschreibung: "Stehe aufrecht. Hebe dich auf die Zehenspitzen — halte 3 Sekunden — senke langsam ab. 15 Wiederholungen. Das zweite Herz arbeitet.",
+    dauer: "2 Min",
+    symptome: ["erschöpfung", "schwere Beine"],
+    stimmung: ["müde", "erschöpft"],
+    situation: ["zuhause", "büro", "unterwegs"],
+    säule: "viszeral",
+    tipp: "Die Wadenmuskulatur pumpt venöses Blut zurück zum Herzen."
+  },
+  {
+    id: 73,
+    titel: "Barfuß im Gras",
+    beschreibung: "Gehe barfuß auf Gras, Erde oder Sand — 10 Minuten. Spür die Textur unter den Füßen. Atme durch die Nase.",
+    dauer: "10 Min",
+    symptome: ["stress", "erschöpfung", "schlafprobleme"],
+    stimmung: ["gestresst", "unruhig", "müde"],
+    situation: ["unterwegs", "zuhause"],
+    säule: "craniosacral",
+    tipp: "Erdung über die Füße hat messbare Auswirkungen auf Cortisol und Entzündungsmarker."
+  },
+  {
+    id: 74,
+    titel: "Knöchel kreisen",
+    beschreibung: "Sitze oder liege. Kreise mit beiden Knöcheln — 10x in jede Richtung. Dann die Zehen spreizen und zusammenziehen — 10x.",
+    dauer: "2 Min",
+    symptome: ["verspannungen", "erschöpfung"],
+    stimmung: ["steif", "müde"],
+    situation: ["zuhause", "büro", "unterwegs"],
+    säule: "parietal",
+    tipp: "Der Knöchel beeinflusst Knie, Hüfte und LWS — kleine Bewegung, große Wirkung."
+  },
+  {
+    id: 75,
+    titel: "Wandsitzen (Isometrisch)",
+    beschreibung: "Lehne mit dem Rücken an die Wand. Gehe in eine Sitzposition (90°). Halte 30–60 Sekunden. Atme dabei ruhig und gleichmäßig.",
+    dauer: "2 Min",
+    symptome: ["erschöpfung", "rückenschmerzen"],
+    stimmung: ["müde", "steif"],
+    situation: ["zuhause", "büro"],
+    säule: "parietal",
+    tipp: "Stärkt die Beinmuskulatur ohne Belastung der Gelenke."
+  },
+  {
+    id: 76,
+    titel: "Emotion im Körper orten",
+    beschreibung: "Schließe die Augen. Frage dich: Wo im Körper spüre ich diese Emotion? Wie groß ist sie? Welche Farbe hätte sie? Atme dorthin. Nur beobachten.",
+    dauer: "5 Min",
+    symptome: ["angst", "stress"],
+    stimmung: ["traurig", "ängstlich", "überwältigt"],
+    situation: ["zuhause", "abends"],
+    säule: "craniosacral",
+    tipp: "Emotionen sind körperliche Empfindungen — sie brauchen Raum, nicht Unterdrückung."
+  },
+  {
+    id: 77,
+    titel: "Weinen erlauben",
+    beschreibung: "Wenn Tränen kommen — lass sie. Atme dabei tief. Weinen ist eine der natürlichsten Stressreaktionen und setzt Oxytocin frei.",
+    dauer: "So lang wie nötig",
+    symptome: ["stress", "erschöpfung"],
+    stimmung: ["traurig", "überwältigt"],
+    situation: ["zuhause"],
+    säule: "craniosacral",
+    tipp: "Tränen enthalten Stresshormone — Weinen ist buchstäblich Entgiftung."
+  },
+  {
+    id: 78,
+    titel: "Brief schreiben — nicht abschicken",
+    beschreibung: "Schreibe einen Brief an jemanden oder etwas — ohne Filter, ohne Zensur. Schimpfen, klagen, danken — alles erlaubt. Danach zerreißen oder aufbewahren.",
+    dauer: "10 Min",
+    symptome: ["stress", "angst"],
+    stimmung: ["traurig", "überwältigt", "ängstlich"],
+    situation: ["zuhause"],
+    säule: "craniosacral",
+    tipp: "Schreiben externalisiert innere Zustände — das Nervensystem bekommt Luft."
+  },
+  {
+    id: 79,
+    titel: "Lachen-Yoga",
+    beschreibung: "Fange an zu lachen — auch wenn es sich künstlich anfühlt. Halte es 1 Minute durch. Der Körper unterscheidet nicht zwischen echtem und gespieltem Lachen.",
+    dauer: "2 Min",
+    symptome: ["stress", "erschöpfung"],
+    stimmung: ["traurig", "gestresst", "müde"],
+    situation: ["zuhause"],
+    säule: "craniosacral",
+    tipp: "Lachen ist die einzige Emotion die Sympathikus und Parasympathikus gleichzeitig aktiviert."
+  },
+  {
+    id: 80,
+    titel: "Selbst-Mitgefühl Pause",
+    beschreibung: "Lege eine Hand aufs Herz. Sage dir innerlich: 'Das ist gerade schwer. Ich bin nicht allein damit. Ich bin gut genug.' Atme dabei tief.",
+    dauer: "3 Min",
+    symptome: ["stress", "angst", "erschöpfung"],
+    stimmung: ["traurig", "überwältigt", "erschöpft"],
+    situation: ["zuhause", "büro", "unterwegs"],
+    säule: "craniosacral",
+    tipp: "Selbst-Mitgefühl ist kein Selbstmitleid — es ist die Grundlage für Resilienz."
+  },
+  {
+    id: 81,
+    titel: "Power Pose",
+    beschreibung: "Stehe breit. Hände in die Hüften oder Arme nach oben gestreckt. Halte 2 Minuten. Atme tief. Die Körperhaltung beeinflusst Hormonspiegel.",
+    dauer: "2 Min",
+    symptome: ["erschöpfung", "angst"],
+    stimmung: ["müde", "ängstlich"],
+    situation: ["zuhause", "büro", "unterwegs"],
+    säule: "craniosacral",
+    tipp: "Körperhaltung und innerer Zustand beeinflussen sich gegenseitig — in beide Richtungen."
+  },
+  {
+    id: 82,
+    titel: "Klopfen (EFT-Klopfpunkte)",
+    beschreibung: "Klopfe sanft mit den Fingerkuppen auf: Scheitel — Augenbraue — Schläfe — unter dem Auge — unter der Nase — Kinn — Schlüsselbein. Je 7x pro Punkt.",
+    dauer: "3 Min",
+    symptome: ["angst", "stress", "erschöpfung"],
+    stimmung: ["ängstlich", "gestresst", "müde"],
+    situation: ["zuhause", "büro", "unterwegs"],
+    säule: "craniosacral",
+    tipp: "EFT-Klopfen stimuliert Akupressurpunkte und beruhigt die Amygdala."
+  },
+  {
+    id: 83,
+    titel: "Sonnenlicht tanken",
+    beschreibung: "Gehe für 10 Minuten nach draußen — ohne Sonnenbrille. Schaue nicht direkt in die Sonne aber lass das Licht ins Gesicht fallen. Frühmorgens ideal.",
+    dauer: "10 Min",
+    symptome: ["erschöpfung", "schlafprobleme"],
+    stimmung: ["müde", "traurig"],
+    situation: ["zuhause", "unterwegs", "morgens"],
+    säule: "viszeral",
+    tipp: "Morgensonnenlicht setzt den zirkadianen Rhythmus — das verbessert Schlaf und Energie."
+  },
+  {
+    id: 84,
+    titel: "Springen",
+    beschreibung: "Spring 30 Sekunden auf der Stelle — so hoch wie möglich. Atme dabei durch den Mund aus. Dann 30 Sekunden gehen. 3 Runden.",
+    dauer: "3 Min",
+    symptome: ["erschöpfung", "stress"],
+    stimmung: ["müde", "gestresst"],
+    situation: ["zuhause"],
+    säule: "parietal",
+    tipp: "Springen aktiviert das Lymphsystem direkt — keine Pumpe wie das Herz beim Blut."
+  },
+  {
+    id: 85,
+    titel: "Kalte Dusche (30 Sekunden)",
+    beschreibung: "Beende die Dusche mit 30 Sekunden kaltem Wasser — von den Füßen aufwärts. Atme dabei tief und ruhig. Nicht zittern — atmen.",
+    dauer: "1 Min",
+    symptome: ["erschöpfung"],
+    stimmung: ["müde", "erschöpft"],
+    situation: ["zuhause", "morgens"],
+    säule: "craniosacral",
+    tipp: "Kälte aktiviert den Vagusnerv, erhöht Dopamin und verbessert die Konzentration."
+  },
+  {
+    id: 86,
+    titel: "Bittere Kräuter vor dem Essen",
+    beschreibung: "Kaue vor dem Essen auf einem Rucola-Blatt oder trinke einen Schluck Löwenzahntee. Bitteres aktiviert Gallen- und Magenfluss.",
+    dauer: "2 Min",
+    symptome: ["bauchbeschwerden", "erschöpfung"],
+    stimmung: ["müde"],
+    situation: ["zuhause"],
+    säule: "viszeral",
+    tipp: "Bitter ist der am meisten vernachlässigte Geschmack in der westlichen Ernährung."
+  },
+  {
+    id: 87,
+    titel: "Bewusstes Kauen",
+    beschreibung: "Kaue jeden Bissen 20–30 Mal bevor du schluckst. Lege das Besteck zwischen den Bissen ab. Iss ohne Bildschirm.",
+    dauer: "Beim Essen",
+    symptome: ["bauchbeschwerden", "blähungen"],
+    stimmung: ["gestresst"],
+    situation: ["zuhause", "büro"],
+    säule: "viszeral",
+    tipp: "Verdauung beginnt im Mund — Enzyme im Speichel starten den Prozess."
+  },
+  {
+    id: 88,
+    titel: "Leber-Wärme",
+    beschreibung: "Lege eine Wärmflasche unter den rechten Rippenbogen — 10 Minuten. Atme dabei tief. Die Leber mag Wärme.",
+    dauer: "10 Min",
+    symptome: ["bauchbeschwerden", "erschöpfung", "rückenschmerzen"],
+    stimmung: ["erschöpft", "müde"],
+    situation: ["zuhause", "abends"],
+    säule: "viszeral",
+    tipp: "Wärme fördert den Gallenfluss und entspannt die Leberkapsel."
+  },
+  {
+    id: 89,
+    titel: "Fermentiertes täglich",
+    beschreibung: "Iss täglich eine kleine Portion fermentiertes: Joghurt, Kefir, Sauerkraut, Kimchi. Startet die Darmflora sanft.",
+    dauer: "5 Min",
+    symptome: ["bauchbeschwerden"],
+    stimmung: ["müde"],
+    situation: ["zuhause"],
+    säule: "viszeral",
+    tipp: "Klein anfangen — ein Esslöffel Sauerkraut täglich ist besser als kein Probiotikum."
+  },
+  {
+    id: 90,
+    titel: "Keine Mahlzeit unter Stress",
+    beschreibung: "Bevor du isst: Atme 5 Mal tief durch. Setze dich. Lass die Schultern fallen. Dein Verdauungssystem arbeitet nur im Parasympathikus.",
+    dauer: "1 Min",
+    symptome: ["bauchbeschwerden", "stress"],
+    stimmung: ["gestresst"],
+    situation: ["zuhause", "büro"],
+    säule: "viszeral",
+    tipp: "Unter Stress wird die Verdauung abgeschaltet — essen dann ist Ressourcenverschwendung."
+  },
+  {
+    id: 91,
+    titel: "Trockenbürsten",
+    beschreibung: "Bürste die trockene Haut mit einer Naturhaarbürste — immer in Richtung Herz. Von den Füßen aufwärts, von den Händen zur Mitte. 5 Minuten.",
+    dauer: "5 Min",
+    symptome: ["erschöpfung", "verspannungen"],
+    stimmung: ["müde"],
+    situation: ["zuhause", "morgens"],
+    säule: "viszeral",
+    tipp: "Trockenbürsten aktiviert das Lymphsystem und belebt die Haut."
+  },
+  {
+    id: 92,
+    titel: "Lymphdrainage Hals",
+    beschreibung: "Lege die Fingerkuppen leicht unter die Ohren. Ziehe sanft nach unten Richtung Schlüsselbein — sehr sanft, kein Druck. 10 Mal.",
+    dauer: "2 Min",
+    symptome: ["kopfschmerzen", "nackenschmerzen", "erschöpfung"],
+    stimmung: ["müde", "angespannt"],
+    situation: ["zuhause", "büro"],
+    säule: "viszeral",
+    tipp: "Die Lymphknoten unter den Ohren sind oft verstopft — sanfte Drainage hilft sofort."
+  },
+  {
+    id: 93,
+    titel: "Tiefes Ausatmen",
+    beschreibung: "Atme so tief aus wie möglich — drücke wirklich alles raus. Dann lass die Einatmung von selbst kommen. Wiederhole 8 Mal.",
+    dauer: "2 Min",
+    symptome: ["stress", "erschöpfung", "angst"],
+    stimmung: ["gestresst", "überwältigt"],
+    situation: ["zuhause", "büro", "unterwegs"],
+    säule: "parietal",
+    tipp: "Das vollständige Ausatmen entleert die Lunge — mehr Platz für frische Luft."
+  },
+  {
+    id: 94,
+    titel: "Ölziehen morgens",
+    beschreibung: "Nehme einen Esslöffel Kokos- oder Sesamöl in den Mund. Ziehe es 5–10 Minuten durch die Zähne. Dann ausspucken (nicht schlucken), Mund ausspülen.",
+    dauer: "10 Min",
+    symptome: ["erschöpfung", "bauchbeschwerden"],
+    stimmung: ["müde"],
+    situation: ["zuhause", "morgens"],
+    säule: "viszeral",
+    tipp: "Ayurvedische Methode zur Entgiftung über die Mundschleimhaut."
+  },
+  {
+    id: 95,
+    titel: "Natur-Pause",
+    beschreibung: "Gehe raus. Nicht spazieren — einfach sein. Lehne an einen Baum. Schaue in den Himmel. 10 Minuten ohne Ziel.",
+    dauer: "10 Min",
+    symptome: ["stress", "erschöpfung", "angst"],
+    stimmung: ["überwältigt", "gestresst", "müde"],
+    situation: ["unterwegs", "zuhause"],
+    säule: "craniosacral",
+    tipp: "Studien zeigen: 20 Minuten Natur reduzieren Cortisol messbar."
+  },
+  {
+    id: 96,
+    titel: "Augenpalmieren",
+    beschreibung: "Reibe die Handflächen warm. Lege sie sanft über die geschlossenen Augen — ohne zu drücken. Atme tief. 3 Minuten im Dunkeln sein.",
+    dauer: "3 Min",
+    symptome: ["kopfschmerzen", "erschöpfung"],
+    stimmung: ["müde", "erschöpft", "gestresst"],
+    situation: ["zuhause", "büro"],
+    säule: "craniosacral",
+    tipp: "Dunkelheit und Wärme entspannen die Sehnerven direkt."
+  },
+  {
+    id: 97,
+    titel: "Tiefe Kniebeuge (Squat)",
+    beschreibung: "Gehe in eine tiefe Kniebeuge — so tief wie möglich, Fersen am Boden. Halte dich wenn nötig fest. Halte 1–2 Minuten. Öffnet Hüfte, Becken und LWS.",
+    dauer: "2 Min",
+    symptome: ["rückenschmerzen", "hüftschmerzen", "verspannungen"],
+    stimmung: ["steif", "angespannt"],
+    situation: ["zuhause"],
+    säule: "parietal",
+    tipp: "Die tiefe Hocke ist die natürlichste Ruheposition des Menschen — wir haben sie verlernt."
+  },
+  {
+    id: 98,
+    titel: "Sanftes Kopfnicken",
+    beschreibung: "Nicke ganz langsam und minimal mit dem Kopf — nur 1–2 cm. Wo zieht es? Halte dort 20 Sekunden. Dann zur anderen Seite. 5 Minuten.",
+    dauer: "5 Min",
+    symptome: ["nackenschmerzen", "kopfschmerzen"],
+    stimmung: ["angespannt", "steif"],
+    situation: ["zuhause", "büro"],
+    säule: "parietal",
+    tipp: "Kleinste Bewegungen mobilisieren die tiefen HWS-Gelenke am effektivsten."
+  },
+  {
+    id: 99,
+    titel: "Zunge an den Gaumen",
+    beschreibung: "Lege die Zungenspitze leicht an den harten Gaumen — direkt hinter den oberen Schneidezähnen. Halte diese Position. Atme durch die Nase. Entspannt Kiefer und Nacken.",
+    dauer: "5 Min",
+    symptome: ["nackenschmerzen", "kopfschmerzen", "stress"],
+    stimmung: ["angespannt", "gestresst"],
+    situation: ["zuhause", "büro", "unterwegs"],
+    säule: "parietal",
+    tipp: "Die richtige Zungenposition entlastet das Kiefergelenk und verbessert die Nasenatmung."
+  },
+  {
+    id: 100,
+    titel: "Körper-Dankbarkeit",
+    beschreibung: "Lege beide Hände auf verschiedene Körperstellen. Danke ihnen innerlich für ihre Arbeit — Herz, Lunge, Bauch, Beine. 5 Minuten bewusste Anerkennung.",
+    dauer: "5 Min",
+    symptome: ["stress", "erschöpfung", "angst"],
+    stimmung: ["traurig", "überwältigt", "erschöpft"],
+    situation: ["zuhause", "abends"],
+    säule: "craniosacral",
+    tipp: "Der Körper ist nicht dein Feind — er versucht dir zu helfen. Dankbarkeit verändert die Beziehung zu ihm."
+  }
+];
+
+// Keyword-Mapping: freie Eingabe → interne Schlüsselwörter
+const SYMPTOM_MAP = {
+  "kopf": "kopfschmerzen", "kopfweh": "kopfschmerzen", "migräne": "kopfschmerzen",
+  "nacken": "nackenschmerzen", "hals": "nackenschmerzen",
+  "rücken": "rückenschmerzen", "wirbel": "rückenschmerzen", "lws": "rückenschmerzen",
+  "bauch": "bauchbeschwerden", "magen": "bauchbeschwerden", "darm": "bauchbeschwerden",
+  "bläh": "blähungen", "verdauung": "bauchbeschwerden", "verstopf": "verstopfung",
+  "müde": "erschöpfung", "erschöpf": "erschöpfung", "kraft": "erschöpfung",
+  "schlaf": "schlafprobleme", "einschlaf": "schlafprobleme", "nacht": "schlafprobleme",
+  "angst": "angst", "panik": "panik", "herzklopf": "angst",
+  "stress": "stress", "überlas": "stress", "nervös": "stress",
+  "verspann": "verspannungen", "steif": "verspannungen", "hart": "verspannungen",
+  "hüfte": "hüftschmerzen", "becken": "hüftschmerzen",
+  "schulter": "verspannungen", "arm": "verspannungen"
+};
+
+const STIMMUNG_MAP = {
+  "stress": "gestresst", "gestress": "gestresst", "angespan": "angespannt",
+  "erschöpf": "erschöpft", "müde": "müde", "kaputt": "erschöpft",
+  "ängst": "ängstlich", "angst": "ängstlich", "nervös": "unruhig",
+  "traurig": "traurig", "trauer": "traurig", "weinen": "traurig",
+  "überw": "überwältigt", "zu viel": "überwältigt",
+  "unruhig": "unruhig", "ruhelos": "unruhig",
+  "steif": "steif", "schwer": "müde", "leer": "erschöpft"
+};
+
+const SITUATION_MAP = {
+  "zuhause": "zuhause", "heim": "zuhause", "wohnung": "zuhause", "sofa": "zuhause", "bett": "zuhause",
+  "büro": "büro", "arbeit": "büro", "schreibtisch": "büro", "meeting": "büro", "office": "büro",
+  "unterwegs": "unterwegs", "auto": "unterwegs", "bahn": "unterwegs", "bus": "unterwegs", "draußen": "unterwegs",
+  "morgen": "morgens", "aufsteh": "morgens",
+  "abend": "abends", "nacht": "abends", "schlafen": "abends"
+};
+
+function mapInput(text, map) {
+  const lower = text.toLowerCase();
+  for (const [key, val] of Object.entries(map)) {
+    if (lower.includes(key)) return val;
+  }
+  return lower;
+}
+
+function findeUebungen(symptomRaw, stimmungRaw, situationRaw) {
+  const symptom = mapInput(symptomRaw, SYMPTOM_MAP);
+  const stimmung = mapInput(stimmungRaw, STIMMUNG_MAP);
+  const situation = mapInput(situationRaw, SITUATION_MAP);
+
+  const scored = uebungen.map(u => {
+    let score = 0;
+    if (u.symptome.some(s => symptom.includes(s) || s.includes(symptom))) score += 3;
+    if (u.stimmung.some(s => stimmung.includes(s) || s.includes(stimmung))) score += 2;
+    if (u.situation.some(s => situation.includes(s) || s.includes(situation))) score += 1;
+    return { ...u, score };
+  });
+
+  const relevant = scored
+    .filter(u => u.score > 0)
+    .sort((a, b) => b.score - a.score || Math.random() - 0.5);
+
+  // Versuche aus verschiedenen Säulen zu wählen
+  const result = [];
+  const säulen = new Set();
+  for (const u of relevant) {
+    if (result.length >= 3) break;
+    if (!säulen.has(u.säule) || result.length === 2) {
+      result.push(u);
+      säulen.add(u.säule);
+    }
+  }
+  // Auffüllen falls nötig
+  for (const u of relevant) {
+    if (result.length >= 3) break;
+    if (!result.find(r => r.id === u.id)) result.push(u);
+  }
+  // Kein Treffer → null zurückgeben
+  if (result.length === 0) return null;
+  return result.slice(0, 3);
+}
+
+
+function suchen() {
+  try {
+    const vorname = document.getElementById('vorname').value.trim();
+    const symptom = document.getElementById('symptom').value.trim();
+    const stimmung = document.getElementById('stimmung').value.trim();
+    const situation = document.getElementById('situation').value.trim();
+    const err = document.getElementById('error');
+
+    if (!symptom && !stimmung && !situation) {
+      err.textContent = 'Bitte fülle mindestens ein Feld aus.';
+      err.classList.add('show');
+      return;
+    }
+    err.classList.remove('show');
+
+    const treffer = findeUebungen(symptom, stimmung, situation);
+    zeigenErgebnisse(treffer, vorname, symptom, stimmung, situation);
+  } catch(e) {
+    const err = document.getElementById('error');
+    err.textContent = 'Fehler: ' + e.message;
+    err.classList.add('show');
+  }
+}
+
+function zeigenErgebnisse(liste, vorname, symptom, stimmung, situation) {
+  const name = vorname ? vorname + ', hier' : 'Hier';
+  const parts = [symptom, stimmung, situation].filter(Boolean);
+
+  document.getElementById('results-title').textContent = name + ' sind deine 3 Übungen';
+  document.getElementById('results-sub').textContent = parts.length
+    ? 'Passend zu: ' + parts.join(' · ')
+    : '';
+
+  const cards = document.getElementById('cards');
+  cards.innerHTML = '';
+
+  if (!liste) {
+    cards.innerHTML = '<div class="no-match">Dazu habe ich leider keine passende Übung gefunden.<br>Versuch es mit anderen Worten — z.B. <em>Nacken</em> statt <em>Hals</em>, oder <em>gestresst</em> statt <em>nervös</em>.<br><br>Oder schreib mir direkt: <a href="mailto:lisa.goldschmidt@stressfrei-er-leben.de" style="color:var(--accent)">lisa.goldschmidt@stressfrei-er-leben.de</a></div>';
+    document.getElementById('form-card').style.display = 'none';
+    document.getElementById('results').classList.add('show');
+    return;
+  }
+
+  const cards = document.getElementById('cards');
+  cards.innerHTML = '';
+
+  const säulenLabel = { parietal: '🟢 Parietal', viszeral: '🟡 Viszeral', craniosacral: '🔵 Craniosacral' };
+
+  liste.forEach((u, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-num">Übung ${i + 1} · ${säulenLabel[u.säule] || u.säule}</div>
+      <div class="card-title">${esc(u.titel)}</div>
+      <div class="card-desc">${esc(u.beschreibung)}</div>
+      <div class="card-footer">
+        <span class="card-dauer">⏱ ${esc(u.dauer)}</span>
+      </div>
+      ${u.tipp ? `<div class="card-tipp">💡 ${esc(u.tipp)}</div>` : ''}
+    `;
+    cards.appendChild(card);
+  });
+
+  document.getElementById('form-card').style.display = 'none';
+  const res = document.getElementById('results');
+  res.classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function reset() {
+  document.getElementById('results').classList.remove('show');
+  document.getElementById('form-card').style.display = 'block';
+  document.getElementById('error').classList.remove('show');
+  ['symptom','stimmung','situation'].forEach(id => document.getElementById(id).value = '');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+['symptom','stimmung','situation'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); suchen(); }
+  });
+});
+</script>
+</body>
+</html>
