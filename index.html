@@ -1352,9 +1352,6 @@ function zeigenErgebnisse(liste, vorname, symptom, stimmung, situation) {
     return;
   }
 
-  const cards = document.getElementById('cards');
-  cards.innerHTML = '';
-
   const säulenLabel = { parietal: '🟢 Parietal', viszeral: '🟡 Viszeral', craniosacral: '🔵 Craniosacral' };
 
   liste.forEach((u, i) => {
